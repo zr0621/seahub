@@ -4073,8 +4073,17 @@ class GroupRepo(APIView):
             seaserv.del_org_group_repo(repo_id, org_id, group_id)
         else:
             seafile_api.unset_group_repo(repo_id, group_id, username)
+
         # delete extra share permission
         ExtraGroupsSharePermission.objects.delete_share_permission(repo_id, group_id)
+
+        repo = seafile_api.get_repo(repo_id)
+        origin_repo_id = repo.origin_repo_id or repo_id
+        origin_path = repo.origin_path or '/'
+
+        # TODO  seafile_api.get_single_group_library
+        send_perm_audit_msg('delete-repo-perm', username, group_id,
+                origin_repo_id, origin_path, '')
 
         return HttpResponse(json.dumps({'success': True}), status=200,
                             content_type=json_content_type)
