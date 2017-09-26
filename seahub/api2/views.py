@@ -2622,32 +2622,56 @@ class FileRevision(APIView):
         return get_repo_file(request, repo_id, obj_id, file_name, 'download')
 
 class FileHistory(APIView):
-    authentication_classes = (TokenAuthentication, )
+    authentication_classes = (TokenAuthentication, SessionAuthentication)
     permission_classes = (IsAuthenticated,)
-    throttle_classes = (UserRateThrottle, )
+    throttle_classes = (UserRateThrottle,)
 
     def get(self, request, repo_id, format=None):
+
+        # argument check
         path = request.GET.get('p', None)
-        if path is None:
-            return api_error(status.HTTP_400_BAD_REQUEST, 'Path is missing.')
+        if not path:
+            error_msg = 'p invalid.'
+            return api_error(status.HTTP_400_BAD_REQUEST, error_msg)
 
+        days_str = request.GET.get('days', '7')
         try:
-            commits = seafserv_threaded_rpc.list_file_revisions(repo_id, path,
-                                                                -1, -1)
-        except SearpcError as e:
-            logger.error(e)
-            return api_error(status.HTTP_500_INTERNAL_SERVER_ERROR, "Internal error")
+            days = int(days_str)
+        except ValueError:
+            days = 7
 
-        if not commits:
-            return api_error(status.HTTP_404_NOT_FOUND, 'File not found.')
+        # recourse check
+        repo = seafile_api.get_repo(repo_id)
+        if not repo:
+            error_msg = 'Library %s not found.' % repo_id
+            return api_error(status.HTTP_404_NOT_FOUND, error_msg)
+
+        if not seafile_api.get_file_id_by_path(repo_id, path):
+            error_msg = 'File %s not found.' % path
+            return api_error(status.HTTP_404_NOT_FOUND, error_msg)
+
+        # permission check
+        if check_folder_permission(request, repo_id, path) != 'rw':
+            error_msg = 'Permission denied.'
+            return api_error(status.HTTP_403_FORBIDDEN, error_msg)
+
+        # get file revision
+        try:
+            commits = seafile_api.get_file_revisions(repo_id, path, -1, -1, days)
+        except Exception as e:
+            logger.error(e)
+            error_msg = 'Internal Server Error'
+            return api_error(status.HTTP_500_INTERNAL_SERVER_ERROR, error_msg)
 
         for commit in commits:
             creator_name = commit.creator_name
+            url, is_default, date_uploaded = api_avatar_url(creator_name, 16)
 
             user_info = {}
             user_info['email'] = creator_name
             user_info['name'] = email2nickname(creator_name)
             user_info['contact_email'] = Profile.objects.get_contact_email_by_user(creator_name)
+            user_info['avatar_url'] = request.build_absolute_uri(url)
 
             commit._dict['user_info'] = user_info
 

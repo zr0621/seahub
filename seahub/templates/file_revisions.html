@@ -1,5 +1,5 @@
 {% extends 'base_wide_page.html' %}
-{% load seahub_tags avatar_tags i18n %}
+{% load seahub_tags avatar_tags i18n staticfiles %}
 {% load url from future %}
 
 {% block sub_title %}{% trans "History" %} - {% endblock %}
@@ -19,82 +19,86 @@
 {% endif %}
 
 <p class="tip">{% trans "Tip: a new version will be generated after each modification, and you can restore the file to a previous version." %}</p>
-        <div class="commit-list-topbar ovhd">
-            <p class="path fleft">
-                {% trans 'Current Path:' %}
-                {% for name, link in zipped %}
-                {% if not forloop.last %}
-                <a href="{% url 'view_common_lib_dir' repo.id link|strip_slash %}">{{ name }}</a> /
-                {% else %}
-                <a href="{% url 'view_lib_file' repo.id path %}" target="_blank" >{{ name }}</a>
-                {% endif %}
-                {% endfor %}
-            </p>
-
-            <span class="fright">
-                {% if days != 7 %}
-                <a href="?p={{path|urlencode}}&days=7&referer={{referer|urlencode}}">{% trans "a week" %}</a> /
-                {% else %}
-                {% trans "a week" %} /
-                {% endif %}
-                {% if days != 30 %}
-                <a href="?p={{path|urlencode}}&days=30&referer={{referer|urlencode}}">{% trans "a month" %}</a> /
-                {% else %}
-                {% trans "a month" %} /
-                {% endif %}
-                {% if days != -1 %}
-                <a href="?p={{path|urlencode}}&days=-1&referer={{referer|urlencode}}">{% trans "all" %}</a>
-                {% else %}
-                {% trans "all" %}
-                {% endif %}
-            </span>
-        </div>
-        <table class="commit-list">
-            <tr>
-                <th width="25%" class="time">{% trans 'Time' %}</th>
-                <th width="25%">{% trans 'Modifier' %}</th>
-                <th width="20%">{% trans 'Size' %}</th>
-                <th width="30%">{% trans 'Operations' %}</th>
-            </tr>
-            {% for commit in commits %}
-            <tr>
-                <td class="time">
-                    {{ commit.props.ctime|translate_seahub_time }}
-                    {% if commit.is_first_commit %}
-                    {% trans '(current version)' %}
-                    {% endif %}
-
-                    {% if commit.rev_renamed_old_path %}
-                    <br /><span class="tip">{% blocktrans with old_path=commit.rev_renamed_old_path %}(Renamed or moved from {{ old_path }}){% endblocktrans %}</span>
-                    {% endif %}
-                </td>
-
-                {% if commit.creator_name %}
-                <td>
-                    {% avatar commit.creator_name 16 %}
-                    <a href="{% url 'user_profile' commit.creator_name %}" class="vam">{{ commit.creator_name|email2nickname }}</a>
-                </td>
-                {% else %}
-                <td>{% trans 'Unknown' %}</td>
-                {% endif %}
-
-                <td>{{ commit.rev_file_size|filesizeformat }} </td>
-                <td>
-                    {% if can_revert_file and not commit.is_first_commit %}
-                    <a href="#" class="op vh restore-file" data-commit_id="{{ commit.id }}" data-commit_path="{{ commit.path }}">{% trans 'Restore' %}</a>
-                    {% endif %}
-                    <a href="{% url "download_file" repo.id commit.rev_file_id %}?p={{commit.path|urlencode}}" class="op vh">{% trans 'Download' %}</a>
-                    <a href="{% url 'view_history_file' repo.id %}?obj_id={{ commit.rev_file_id }}&commit_id={{ commit.id }}&p={{commit.path|urlencode}}" class="op vh" target="_blank">{% trans 'View' %}</a>
-                    {% if can_compare and not forloop.last %}
-                    <a href="{% url 'text_diff' repo.id %}?p={{commit.path|urlencode}}&commit={{commit.id}}" class="op vh text-diff">{% trans 'Diff' %}</a>
-                    {% endif %}
-                </td>
-            </tr>
+    <div class="commit-list-topbar ovhd">
+        <p class="path fleft">
+            {% trans 'Current Path:' %}
+            {% for name, link in zipped %}
+            {% if not forloop.last %}
+            <a href="{% url 'view_common_lib_dir' repo.id link|strip_slash %}">{{ name }}</a> /
+            {% else %}
+            <a href="{% url 'view_lib_file' repo.id path %}" target="_blank" >{{ name }}</a>
+            {% endif %}
             {% endfor %}
-        </table>
+        </p>
+
+        <span class="fright">
+            <a href="#" class="history-days" data-days="7">{% trans "a week" %}</a> /
+            <a href="#" class="history-days" data-days="30">{% trans "a month" %}</a> /
+            <a href="#" class="history-days" data-days="-1">{% trans "all" %}</a>
+        </span>
+    </div>
+    <table class="commit-list">
+        <thead>
+        <tr>
+            <th width="25%" class="time">{% trans 'Time' %}</th>
+            <th width="25%">{% trans 'Modifier' %}</th>
+            <th width="20%">{% trans 'Size' %}</th>
+            <th width="30%">{% trans 'Operations' %}</th>
+        </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <div class="loading-icon loading-tip"></div>
 {% endblock %}
 
 {% block extra_script %}
+<script type="text/javascript" src="{% static "scripts/lib/underscore.js" %}"></script>
+<script type="text/javascript" src="{% static "scripts/lib/moment-with-locales.js" %}"></script>
+
+<script type="text/template" id="file-history-item-tmpl">
+<tr>
+    <td class="time">
+        <%- time_from_now %>
+        <% if (is_first_commit) { %>
+        {% trans '(current version)' %}
+        <% } %>
+
+        <% if (rev_renamed_old_path) { %>
+        <br /><span class="tip"><%- rev_renamed_old_path_trans_str %></span>
+        <% } %>
+    </td>
+
+    <% if (creator_name) { %>
+    <td>
+        <img src="<%- user_info.avatar_url %>" width="16" height="16" class="avatar">
+        <a href="<%- user_profile_url %>" class="vam"><%- user_info.name %></a>
+    </td>
+    <% } else { %>
+    <td>{% trans 'Unknown' %}</td>
+    <% } %>
+
+    <td><%- formated_size %></td>
+
+    <td>
+        {% if can_revert_file %}
+        <% if (!is_first_commit) { %>
+        <a href="#" class="op vh restore-file" data-commit_id="<%- id %>" data-commit_path="<%- path %>">{% trans 'Restore' %}</a>
+        <% } %>
+        {% endif %}
+
+        <a href="<%- download_file_url %>" class="op vh">{% trans 'Download' %}</a>
+        <a href="<%- view_file_url %>" class="op vh" target="_blank">{% trans 'View' %}</a>
+
+        {% if can_compare %}
+        <% if (!is_forloop_last) { %>
+        <a href="<%- text_diff_url %>" class="op vh" target="_blank">{% trans 'Diff' %}</a>
+        <% } %>
+        {% endif %}
+    </td>
+</tr>
+</script>
+
 <script type="text/javascript">
 $('.restore-file').click(function() {
     var _this = $(this),
@@ -118,10 +122,106 @@ $('.restore-file').click(function() {
     return false;
 });
 
-$('.text-diff').each(function() {
-    $(this).attr('href', $(this).attr('href') + '&referer=' + encodeURIComponent(location.href));
-});
 
 {% include 'snippets/go_back_js.html' %}
+
+var file_path = '{{path}}';
+
+var fileHistory = {
+
+    template: _.template($('#file-history-item-tmpl').html()),
+
+    setLocale: function() {
+        var lang_code = '{{LANGUAGE_CODE}}';
+        var m_lang_code;
+        if (lang_code == 'en') {
+            m_lang_code = 'en-gb';
+        } else if (lang_code == 'es-ar' || lang_code == 'es-mx') {
+            m_lang_code = 'es';
+        } else {
+            m_lang_code = lang_code;
+        }
+        moment.locale(m_lang_code);
+    },
+
+    util_getRelativeTimeStr: function(m) {
+        var now = new Date();
+        if (m - now > 0) {
+            return "{% trans "Just now" %}";
+        } else {
+            return m.fromNow();
+        }
+    },
+
+    getContent: function(days) {
+        var _this = this;
+        var data = {'p': file_path, 'days': days};
+        $.ajax({
+            url: '{% url "api2-file-history" repo.id %}',
+            type: 'GET',
+            cache: false,
+            data: data,
+            dataType: 'json',
+            success: function(data) {
+
+                var commits = data['commits'];
+                var td_data = '';
+
+                _.each(commits, function(commit, index) {
+                    var m = moment.unix(commit.ctime);
+
+                    commit.path = file_path;
+                    commit.time = m.format('LLLL');
+                    commit.time_from_now = _this.util_getRelativeTimeStr(m);
+                    commit.formated_size = filesizeformat(commit.rev_file_size);
+                    commit.rev_renamed_old_path_trans_str = "{% trans '(Renamed or moved from %s)' %}".replace('%s', HTMLescape(commit.rev_renamed_old_path));
+
+                    commit.user_profile_url = '{{SITE_ROOT}}profile/' + encodeURIComponent(commit.creator_name) + '/';
+                    commit.download_file_url = '{{SITE_ROOT}}repo/{{repo.id}}/' + commit.rev_file_id + '/download/?p=' + encodeURIComponent(file_path);
+                    commit.view_file_url = '{{SITE_ROOT}}repo/{{repo.id}}/history/files/?p=' + encodeURIComponent(file_path) + '&obj_id=' + commit.rev_file_id + '&commit_id=' + commit.id;
+
+                    commit.text_diff_url = '{{SITE_ROOT}}repo/text_diff/{{repo.id}}/?p=' + encodeURIComponent(file_path) + '&commit=' + commit.id + '&referer=' + encodeURIComponent(location.href);
+
+                    if (index == 0) {
+                        commit.is_first_commit = true;
+                    } else {
+                        commit.is_first_commit = false;
+                    }
+
+                    if (index == (commits.length -1) ) {
+                        commit.is_forloop_last = true;
+                    } else {
+                        commit.is_forloop_last = false;
+                    }
+                    td_data += _this.template(commit);
+                });
+
+                $('.loading-tip').hide();
+                $('.commit-list tbody').append(td_data);
+            },
+            error: function(xhr) {
+                var err_msg;
+                if (xhr.responseText) {
+                    err_msg = $.parseJSON(xhr.responseText).error_msg;
+                } else {
+                    err_msg = "{% trans "Failed. Please check the network." %}";
+                }
+                _this.$conError.html(err_msg).show();
+            }
+        });
+    }
+};
+
+fileHistory.setLocale();
+fileHistory.getContent(7);
+
+$('.history-days').click(function() {
+    $('.commit-list tbody').empty();
+    $('.loading-tip').show();
+
+    var days = $(this).attr('data-days');
+    fileHistory.getContent(days);
+});
+
 </script>
 {% endblock %}
