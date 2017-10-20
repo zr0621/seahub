@@ -240,8 +240,8 @@ class DirSharedItemsEndpoint(APIView):
                             repo_id, path, repo_owner, shared_to, permission)
 
             if path == '/':
-                ExtraSharePermission.objects.update_share_permission(repo_id, 
-                                                                     shared_to, 
+                ExtraSharePermission.objects.update_share_permission(repo_id,
+                                                                     shared_to,
                                                                      extra_share_permission)
             send_perm_audit_msg('modify-repo-perm', username, shared_to,
                                 repo_id, path, permission)
@@ -276,8 +276,8 @@ class DirSharedItemsEndpoint(APIView):
 
             # update extra share permission if updated is repo
             if path == '/':
-                ExtraGroupsSharePermission.objects.update_share_permission(repo_id, 
-                                                                           gid, 
+                ExtraGroupsSharePermission.objects.update_share_permission(repo_id,
+                                                                           gid,
                                                                            extra_share_permission)
             send_perm_audit_msg('modify-repo-perm', username, gid,
                                 repo_id, path, permission)
@@ -556,7 +556,7 @@ class DirSharedItemsEndpoint(APIView):
 
             # Delete share permission at ExtraSharePermission table.
             if path == '/':
-                ExtraSharePermission.objects.delete_share_permission(repo_id, 
+                ExtraSharePermission.objects.delete_share_permission(repo_id,
                                                                      shared_to)
             send_perm_audit_msg('delete-repo-perm', username, shared_to,
                                 repo_id, path, permission)
@@ -568,20 +568,9 @@ class DirSharedItemsEndpoint(APIView):
             except ValueError:
                 return api_error(status.HTTP_400_BAD_REQUEST, 'group_id %s invalid' % group_id)
 
-            # hacky way to get group repo permission
-            permission = ''
-            if is_org_context(request):
-                org_id = request.user.org.org_id
-                shared_groups = seafile_api.list_org_repo_shared_group(
-                        org_id, username, repo_id)
-            else:
-                shared_groups = seafile_api.list_repo_shared_group(
-                        username, repo_id)
-
-            for e in shared_groups:
-                if e.group_id == group_id:
-                    permission = e.perm
-                    break
+            # TODO org mode
+            group_repo = seafile_api.get_repo_by_group(group_id, repo_id)
+            permission = group_repo.permission
 
             if is_org_context(request):
                 # when calling seafile API to share authority related functions, change the uesrname to repo owner.
@@ -602,10 +591,10 @@ class DirSharedItemsEndpoint(APIView):
 
             # delete share permission if repo is deleted
             if path == '/':
-                ExtraGroupsSharePermission.objects.delete_share_permission(repo_id, 
-                                                                          group_id)
+                ExtraGroupsSharePermission.objects.delete_share_permission(repo_id, group_id)
+
             send_perm_audit_msg('delete-repo-perm', username, group_id,
-                                repo_id, path, permission)
+                    repo_id, path, permission)
 
         return HttpResponse(json.dumps({'success': True}), status=200,
                             content_type=json_content_type)
