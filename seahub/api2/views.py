@@ -1345,29 +1345,45 @@ class UploadLinkView(APIView):
     throttle_classes = (UserRateThrottle,)
 
     def get(self, request, repo_id, format=None):
+
+        from datetime import datetime
+
         # recourse check
+        start = datetime.now()
         repo = seafile_api.get_repo(repo_id)
+        logger.error('%s:get_repo' % (datetime.now()-start))
         if not repo:
             error_msg = 'Library %s not found.' % repo_id
             return api_error(status.HTTP_404_NOT_FOUND, error_msg)
 
         parent_dir = request.GET.get('p', '/')
+        start = datetime.now()
         dir_id = seafile_api.get_dir_id_by_path(repo_id, parent_dir)
+        logger.error('%s:get_dir_id_by_path' % (datetime.now()-start))
         if not dir_id:
             error_msg = 'Folder %s not found.' % parent_dir
             return api_error(status.HTTP_404_NOT_FOUND, error_msg)
 
         # permission check
+        start = datetime.now()
         if check_folder_permission(request, repo_id, parent_dir) != 'rw':
             return api_error(status.HTTP_403_FORBIDDEN,
                     'You do not have permission to access this folder.')
+        logger.error('%s:check_folder_permission' % (datetime.now()-start))
 
+        start = datetime.now()
         if check_quota(repo_id) < 0:
             return api_error(HTTP_443_ABOVE_QUOTA, 'Above quota')
+        logger.error('%s:check_quota' % (datetime.now()-start))
 
+        start = datetime.now()
         token = seafile_api.get_fileserver_access_token(repo_id,
                 'dummy', 'upload', request.user.username, use_onetime=False)
+        logger.error('%s:get_fileserver_access_token' % (datetime.now()-start))
 
+        logger.error(repo_id)
+        logger.error(parent_dir)
+        logger.error(request.user.username)
         if not token:
             error_msg = 'Internal Server Error'
             return api_error(status.HTTP_500_INTERNAL_SERVER_ERROR, error_msg)
