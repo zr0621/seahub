@@ -14,20 +14,20 @@ define([
     'use strict';
 
     var GroupView = Backbone.View.extend({
-        id: 'group',
+        el: '.main-panel',
 
         template: _.template($('#group-tmpl').html()),
-        groupTopTemplate: _.template($('#group-top-tmpl').html()),
-        reposHdTemplate: _.template($('#shared-repos-hd-tmpl').html()),
-        mobileReposHdTemplate: _.template($('#shared-repos-hd-mobile-tmpl').html()),
+        toolbarTemplate: _.template($('#group-toolbar-tmpl').html()),
+        theadTemplate: _.template($('#shared-repos-hd-tmpl').html()),
+        theadMobileTemplate: _.template($('#shared-repos-hd-mobile-tmpl').html()),
 
         events: {
             'click #group-settings-icon': 'toggleSettingsPanel',
             'click #group-members-icon': 'toggleMembersPanel',
             'click #group-discussions-icon': 'toggleDiscussionsPanel',
-            'click .repo-create': 'createRepo',
-            'click .by-name': 'sortByName',
-            'click .by-time': 'sortByTime'
+            'click #group-toolbar .repo-create': 'createRepo',
+            'click #group-repos .by-name': 'sortByName',
+            'click #group-repos .by-time': 'sortByTime'
         },
 
         initialize: function(options) {
@@ -37,10 +37,9 @@ define([
             this.listenTo(this.repos, 'add', this.addOne);
             this.listenTo(this.repos, 'reset', this.reset);
 
-            this.settingsView = new GroupSettingsView({ groupView: this });
-            this.membersView = new GroupMembersView({ groupView: this });
-            this.discussionsView = new GroupDiscussionsView({ groupView: this });
-            this.render();
+            this.settingsView = new GroupSettingsView({groupView: this});
+            this.membersView = new GroupMembersView({groupView: this});
+            this.discussionsView = new GroupDiscussionsView({groupView: this});
         },
 
         addOne: function(repo, collection, options) {
@@ -57,8 +56,8 @@ define([
             }
         },
 
-        renderReposHd: function() {
-            var tmpl = $(window).width() >= 768 ? this.reposHdTemplate : this.mobileReposHdTemplate;
+        renderThead: function() {
+            var tmpl = $(window).width() >= 768 ? this.theadTemplate : this.theadMobileTemplate;
             this.$tableHead.html(tmpl());
         },
 
@@ -67,7 +66,7 @@ define([
             this.$loadingTip.hide();
             if (this.repos.length) {
                 this.$emptyTip.hide();
-                this.renderReposHd();
+                this.renderThead();
                 this.$tableBody.empty();
 
                 // sort
@@ -83,9 +82,8 @@ define([
 
         },
 
-        renderGroupTop: function(options) {
+        showGroup: function(options) {
             var _this = this;
-            var $groupTop = $('#group-top');
             $.ajax({
                 url: Common.getUrl({
                     'name': 'group',
@@ -93,9 +91,14 @@ define([
                 }),
                 cache: false,
                 dataType: 'json',
-                success: function (data) {
+                success: function(data) {
                     _this.group = data;
-                    $groupTop.html(_this.groupTopTemplate(data));
+                    _this.renderToolbar();
+                    _this.renderMainCon({
+                        'name': data.name,
+                        'wiki_enabled': data.wiki_enabled
+                    });
+                    _this.showRepoList();
                     if (options) {
                         if (options.showDiscussions) {
                             _this.showDiscussions();
@@ -109,20 +112,22 @@ define([
                     } else {
                         err_msg = gettext("Please check the network.");
                     }
-                    $groupTop.html('<p class="error">' + err_msg + '</p>');
+                    _this.renderMainCon({
+                        'name': '',
+                        'wiki_enabled': ''
+                    });
+                    _this.$('.cur-view-path').hide();
+                    _this.$loadingTip.hide();
+                    _this.$('.cur-view-main-con .error').html(err_msg).show();
                 }
             });
         },
 
-        showRepoList: function(group_id, options) {
-            this.group_id = group_id;
-            this.$emptyTip.hide();
-            this.renderGroupTop(options);
-            this.$table.hide();
+        showRepoList: function() {
+            var _this = this;
             var $loadingTip = this.$loadingTip;
             $loadingTip.show();
-            var _this = this;
-            this.repos.setGroupID(group_id);
+            this.repos.setGroupID(this.group_id);
             this.repos.fetch({
                 cache: false,
                 reset: true,
@@ -147,29 +152,30 @@ define([
             });
         },
 
-        render: function() {
-            this.$el.html(this.template());
+        renderToolbar: function(data) {
+            this.$toolbar = $('<div class="cur-view-toolbar" id="group-toolbar"></div>').html(this.toolbarTemplate(data));
+            this.$('.common-toolbar').before(this.$toolbar);
+        },
+
+        renderMainCon: function(data) {
+            this.$mainCon = $('<div class="main-panel-main main-panel-main-with-side" id="group"></div>').html(this.template(data));
+            this.$el.append(this.$mainCon);
+
             this.$table = this.$('table');
             this.$tableHead = this.$('thead');
             this.$tableBody = this.$('tbody');
             this.$loadingTip = this.$('#group-repos .loading-tip');
             this.$emptyTip = this.$('#group-repos .empty-tips');
-            this.attached = false;
         },
 
         show: function(group_id, options) {
-            if (!this.attached) {
-                // if the user swith bettern different groups,
-                // the group view is already attached.
-                $("#right-panel").html(this.$el);
-                this.attached = true;
-            }
-            this.showRepoList(group_id, options);
+            this.group_id = group_id;
+            this.showGroup(options);
         },
 
         hide: function() {
-            this.attached = false;
-            this.$el.detach();
+            this.$toolbar.detach();
+            this.$mainCon.detach();
         },
 
         createRepo: function() {

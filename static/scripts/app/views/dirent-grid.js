@@ -91,7 +91,7 @@ define([
 
         showPopupMenu: function(e) {
             // make sure there is only 1 menu popup
-            $('.grid-item-op', this.dirView.$dirent_grid).remove();
+            $('.grid-item-op', this.dirView.$gridViewContainer).remove();
 
             var dir = this.dir;
             var template;
@@ -147,7 +147,7 @@ define([
 
         viewImageWithPopup: function() {
             if (this.model.get('is_img')) {
-                var index = $('.img-grid-item', this.dirView.$dirent_grid).index(this.$el);
+                var index = $('.img-grid-item', this.dirView.$gridViewContainer).index(this.$el);
                 $.magnificPopup.open(this.dirView.magnificPopupOptions, index); // open by index
             }
         },
@@ -167,7 +167,7 @@ define([
         del: function() {
             var _this = this;
             if (this.model.get('is_img')) {
-                var index = $('.img-grid-item', this.dirView.$dirent_grid).index(this.$el);
+                var index = $('.img-grid-item', this.dirView.$gridViewContainer).index(this.$el);
             }
 
             this.closeMenu();
@@ -222,7 +222,7 @@ define([
             };
 
             if (this.model.get('is_img') && op_type == 'mv') {
-                var index = $('.img-grid-item', this.dirView.$dirent_grid).index(this.$el);
+                var index = $('.img-grid-item', this.dirView.$gridViewContainer).index(this.$el);
                 $.extend(options, {
                     'dirView': this.dirView,
                     'imgIndex': index
@@ -242,7 +242,7 @@ define([
             };
 
             if (this.model.get('is_img')) {
-                var index = $('.img-grid-item', this.dirView.$dirent_grid).index(this.$el);
+                var index = $('.img-grid-item', this.dirView.$gridViewContainer).index(this.$el);
                 $.extend(options, {
                     'dirView': this.dirView,
                     'imgIndex': index

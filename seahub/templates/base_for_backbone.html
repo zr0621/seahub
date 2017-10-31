@@ -23,7 +23,7 @@
 </head>
 
 <body>
-    <div id="wrapper" role="application" class="{{ LANGUAGE_CODE }}">
+    <div id="wrapper" role="application" class="{{ LANGUAGE_CODE }} container-fluid h100">
         <!--[if lt IE 10]>
         <p id="top-browser-tip" class="top-bar fixed-top-bar">{% trans "We no longer support this version of IE. Please upgrade it to version 10 or above." %} <span id="top-browser-tip-close" class="top-bar-click">{% trans "Close" %}</span></p>
         <![endif]-->
@@ -36,7 +36,7 @@
         {% endif %}
         {% endblock info_bar_message %}
 
-        <div id="header" role="banner" class="navbar navbar-fixed-top">
+        <div id="header" role="banner" class="navbar hide">
             <div id="header-inner">
                 {% block notice_panel %}{% endblock %}
                 <a href="{{ SITE_ROOT }}" id="logo" class="hidden-sm-down fleft">
@@ -47,42 +47,50 @@
                     {% endif %}
                 </a>
 
-                <button class="sf2-icon-list-view side-nav-toggle hidden-md-up" title="{% trans "Side Nav Menu" %}" id="js-toggle-side-nav" aria-label="{% trans "Side Nav Menu" %}"></button>
 
-                <div class="fright">
-                    {% if has_file_search %}
-                        {% include 'snippets/search_form.html' %}
-                    {% endif %}
-
-                    <div id="notifications" class="fleft">
-                        <a href="#" class="no-deco" id="notice-icon" title="{% trans "Notifications" %}" aria-label="{% trans "Notifications" %}">
-                            <span class="sf2-icon-bell"></span>
-                            <span class="num hide">0</span>
-                        </a>
-                    </div>
-
-                    {% if show_logout_icon %}
-                    <a id="logout-icon" href="{{ SITE_ROOT }}accounts/logout/" class="no-deco fleft" title="{% trans "Log out" %}" aria-label="{% trans "Log out" %}"><span class="sf2-icon-logout"></span></a>
-                    {% endif %}
-
-                    <div id="account" class="fright">
-                        <a id="my-info" href="#" class="no-deco" aria-label="{% trans "View profile and more" %}">
-                            {% avatar request.user 36 %} <span class="icon-caret-down vam"></span>
-                        </a>
-                    </div>
-                </div>
             </div>
         </div>
 
-        <div id="main" class="clear container-fluid top-padding">
-            <div class="row initial-loading">
+            <div class="initial-loading">
                 <span class="loading-icon loading-tip"></span>
             </div>
 
-            <div class="row main-content hide">
-                <div class="side-nav side-tabnav home-side-nav col-md-3" id="side-nav" role="navigation"></div>
-                <div id="right-panel" class="col-md-9 col-md-offset-3">
-                    {% block right_panel %}{% endblock %}
+            <div class="row main-content d-flex h100 hide">
+                <div class="side-panel col-md-3">
+                    <div class="side-panel-top panel-top">
+                        <div id="account">
+                            <a id="my-info" href="#" class="no-deco" aria-label="{% trans "View profile and more" %}">
+                                {% avatar request.user 36 %} <span class="icon-caret-down vam"></span>
+                            </a>
+                        </div>
+                        <a href="#" title="{% trans "Close" %}" aria-label="{% trans "Close" %}" class="sf2-icon-x1 sf-popover-close side-panel-close op-icon hidden-md-up js-close"></a>
+                    </div>
+                    <div id="side-nav" class="home-side-nav" role="navigation"></div> {# #side-nav: to be compatible with old code #}
+                </div>
+
+                <div class="col-md-9 main-panel">
+                    <div class="main-panel-top panel-top">
+                        <button class="sf2-icon-list-view side-nav-toggle hidden-md-up" title="{% trans "Side Nav Menu" %}" id="js-toggle-side-nav" aria-label="{% trans "Side Nav Menu" %}"></button>
+                        {# place for '<div class="cur-view-toolbar" id=""></div>' #}
+                        <div class="common-toolbar">
+                            {% if has_file_search %}
+                                {% include 'snippets/search_form.html' %}
+                            {% endif %}
+
+                            <div id="notifications">
+                                <a href="#" class="no-deco" id="notice-icon" title="{% trans "Notifications" %}" aria-label="{% trans "Notifications" %}">
+                                    <span class="sf2-icon-bell"></span>
+                                    <span class="num hide">0</span>
+                                </a>
+                            </div>
+
+                            {% if show_logout_icon %}
+                            <a id="logout-icon" href="{{ SITE_ROOT }}accounts/logout/" class="no-deco" title="{% trans "Log out" %}" aria-label="{% trans "Log out" %}"><span class="sf2-icon-logout"></span></a>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    {# place for '<div class="main-panel-main" id=""></div>' #}
                 </div>
             </div>
 
@@ -104,7 +112,6 @@
                     <button class="simplemodal-close" style="margin:8px 0 0 0;">{% trans "Close" %}</button>
                 </div>
             </div>
-        </div>
 
     </div><!-- wrapper -->
 

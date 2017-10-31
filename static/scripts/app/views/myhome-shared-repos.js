@@ -9,17 +9,16 @@ define([
     'use strict';
 
     var SharedReposView = Backbone.View.extend({
-        id: 'repos-shared-to-me',
+        el: '.main-panel',
 
         template: _.template($('#repos-shared-to-me-tmpl').html()),
-        reposHdTemplate: _.template($('#shared-repos-hd-tmpl').html()),
-        mobileReposHdTemplate: _.template($('#shared-repos-hd-mobile-tmpl').html()),
+        theadTemplate: _.template($('#shared-repos-hd-tmpl').html()),
+        theadMobileTemplate: _.template($('#shared-repos-hd-mobile-tmpl').html()),
 
         initialize: function(options) {
             this.repos = new RepoCollection({type: 'shared'});
             this.listenTo(this.repos, 'add', this.addOne);
             this.listenTo(this.repos, 'reset', this.reset);
-            this.render();
         },
 
         addOne: function(repo, collection, options) {
@@ -31,8 +30,8 @@ define([
             }
         },
 
-        renderReposHd: function() {
-            var tmpl = $(window).width() >= 768 ? this.reposHdTemplate : this.mobileReposHdTemplate;
+        renderThead: function() {
+            var tmpl = $(window).width() >= 768 ? this.theadTemplate : this.theadMobileTemplate;
             this.$tableHead.html(tmpl());
         },
 
@@ -41,11 +40,11 @@ define([
             this.$loadingTip.hide();
             if (this.repos.length) {
                 this.$emptyTip.hide();
-                this.renderReposHd();
+                this.renderThead();
                 this.$tableBody.empty();
 
                 // sort
-                Common.updateSortIconByMode({'context': this.$el});
+                Common.updateSortIconByMode({'context': this.$table});
                 Common.sortLibs({'libs': this.repos});
 
                 this.repos.each(this.addOne, this);
@@ -58,7 +57,6 @@ define([
         },
 
         showSharedRepos: function() {
-            this.$el.show();
             this.$table.hide();
             var $loadingTip = this.$loadingTip;
             $loadingTip.show();
@@ -86,7 +84,9 @@ define([
         },
 
         render: function() {
-            this.$el.html(this.template());
+            this.$mainCon = $('<div class="main-panel-main" id="shared-repos"></div>').html(this.template());
+            this.$el.append(this.$mainCon);
+
             this.$table = this.$('table');
             this.$tableHead = this.$('thead');
             this.$tableBody = this.$('tbody');
@@ -96,22 +96,23 @@ define([
         },
 
         show: function() {
-            $("#right-panel").html(this.$el);
+            this.render();
+
             this.showSharedRepos();
         },
 
         hide: function() {
-            this.$el.detach();
+            this.$mainCon.detach();
         },
 
         events: {
-            'click .by-name': 'sortByName',
-            'click .by-time': 'sortByTime'
+            'click #shared-repos .by-name': 'sortByName',
+            'click #shared-repos .by-time': 'sortByTime'
         },
 
         sortByName: function() {
             Common.toggleSortByNameMode();
-            Common.updateSortIconByMode({'context': this.$el});
+            Common.updateSortIconByMode({'context': this.$table});
             Common.sortLibs({'libs': this.repos});
 
             this.$tableBody.empty();
@@ -122,7 +123,7 @@ define([
 
         sortByTime: function() {
             Common.toggleSortByTimeMode();
-            Common.updateSortIconByMode({'context': this.$el});
+            Common.updateSortIconByMode({'context': this.$table});
             Common.sortLibs({'libs': this.repos});
 
             this.$tableBody.empty();
