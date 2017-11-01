@@ -79,7 +79,7 @@ define([
 
                 this.fileUploadView = new FileUploadView({dirView: this});
                 this.direntDetailsView = new DirentDetailsView({dirView: this});
-                this.fileCommentsView = new FileCommentsView();
+                this.fileCommentsView = new FileCommentsView({dirView: this});
 
                 // hide 'rename form'
                 $(document).click(function(e) {

@@ -287,8 +287,12 @@ define([
         },
 
         viewDetails: function() {
-            var _this = this;
+            if (this.dirView.fileCommentsView.$el.is(':visible')) {
+                this.dirView.fileCommentsView.hide();
+            }
 
+            var _this = this;
+            var detailsView = this.dirView.direntDetailsView;
             var file_icon_size = Common.isHiDPI() ? 48 : 24;
             var data = {
                 repo_id: this.dir.repo_id,
@@ -310,7 +314,6 @@ define([
                 });
             }
 
-            var detailsView = this.dirView.direntDetailsView;
             detailsView.show(data);
 
             if (this.model.get('perm') == 'rw') {
@@ -388,6 +391,10 @@ define([
         },
 
         viewFileComments: function() {
+            if (this.dirView.direntDetailsView.$el.is(':visible')) {
+                this.dirView.direntDetailsView.hide();
+            }
+
             var file_icon_size = Common.isHiDPI() ? 48 : 24;
             this.dirView.fileCommentsView.show({
                 'is_repo_owner': this.dir.is_repo_owner,

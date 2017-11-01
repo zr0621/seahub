@@ -2512,20 +2512,20 @@
 
 {# file comment #}
 <script type="text/template" id="file-comment-panel-tmpl">
-    <div class="right-side-panel-hd file-discussions-hd ovhd">
-        <a href="#" title="{% trans "Close" %}" aria-label="{% trans "Close" %}" class="sf-popover-close js-close sf2-icon-x1 op-icon fleft"></a>
-        <h3 class="right-side-panel-title">
+    <div class="comments-panel-hd">
+        <a href="#" title="{% trans "Close" %}" aria-label="{% trans "Close" %}" class="sf-popover-close js-close sf2-icon-x1 op-icon"></a>
+        <h3 class="comments-panel-title">
             <img src="<%= icon_url %>" width="24" alt="" class="vam" />
             <span class="vam ellipsis file-comment-panel-item-name" title="<%- file_name %>"><%- file_name %></span>
         </h3>
     </div>
-    <div class="right-side-panel-con file-discussions-con">
+    <div class="comments-panel-con file-discussions-con">
         <div class="loading-icon loading-tip"></div>
         <ul class="file-discussion-list hide"></ul>
         <p class="no-discussion-tip hide">{% trans "No comment yet." %}</p>
         <p class="error hide"></p>
     </div>
-    <div class="right-side-panel-footer file-discussions-footer">
+    <div class="comments-panel-footer">
         <form action="" method="post" class="msg-form">
             <img src="{% avatar_url request.user 64 %}" alt="" width="32" class="avatar-circle fleft" />
             <div class="msg-body">
