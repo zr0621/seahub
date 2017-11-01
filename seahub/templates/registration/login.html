@@ -66,6 +66,17 @@ html, body, #wrapper { height:100%; }
         <button type="submit" class="submit">{% trans "Log In" %}</button>
     </form>
 
+    {% if enable_oauth %}
+    <br />
+    <a href="{% url 'oauth_login' 'github' %}" title="{% trans "Log in With Github" %}">{% trans "Log in With Github" %}</a>
+    <br />
+    <a href="{% url 'oauth_login' 'google' %}" title="{% trans "Log in With Google" %}">{% trans "Log in With Google" %}</a>
+    <br />
+    <a href="{% url 'oauth_login' 'weixin' %}" title="{% trans "Log in With WeiXin" %}">{% trans "Log in With WeiXin" %}</a>
+    <br />
+    <a href="{% url 'weixin_qr_login' %}" title="{% trans "Log in With WeiXin QR" %}">{% trans "Log in With WeiXin QR" %}</a>
+    {% endif %}
+
     {% if enable_adfs_login %}
     <a id="adfs-login" href="#" class="normal">ADFS</a>
     {% endif %}
