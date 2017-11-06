@@ -905,6 +905,7 @@ textarea:-moz-placeholder {/* for FF */
     display:flex;
     flex-direction:column;
     justify-content:space-between; /* make .side-nav-footer on the bottom */
+    overflow:hidden; /* for ff */
 }
 .side-nav-con {
     overflow:hidden;
@@ -1835,6 +1836,7 @@ button.sf-dropdown-toggle:focus {
 }
 .main-panel-main-with-side {
     flex-direction:row;
+    overflow:hidden; /* for ff */
 }
 .cur-view-main {
     flex:1;
@@ -1846,6 +1848,15 @@ button.sf-dropdown-toggle:focus {
     height:40px;
     padding:8px 16px 0;
     background:#f9f9f9;
+    position:relative; /* for the ':after' */
+}
+.cur-view-path:after {
+    content:'';
+    border-bottom:1px solid #e8e8e8;
+    position:absolute;
+    left:16px;
+    right:16px;
+    bottom:0;
 }
 .cur-view-path-path { /* for the real path */
     font-size:16px;
@@ -1936,6 +1947,9 @@ button.sf-dropdown-toggle:focus {
     height:29px;
     background:#fff;
     line-height:17px;
+}
+.cur-view-toolbar .btn-white {
+    min-width: 55px;
 }
 /* info-bar */
 #info-bar {

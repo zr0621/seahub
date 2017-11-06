@@ -122,8 +122,8 @@ define([
                     },
                     success: function() {
                         $.modal.close();
+                        _this.groupView.updateName(new_name);
                         app.ui.sideNavView.updateGroups();
-                        _this.groupView.renderGroupTop();
                     },
                     error: function(xhr) {
                         var error_msg;
@@ -177,8 +177,8 @@ define([
                     data: {
                         'owner': email
                     },
-                    success: function() {
-                        // after the transfer, the former owner becomes a common admin of the group.
+                    success: function(data) {
+                        _this.groupView.group = data;
                         Common.feedback(gettext("Successfully transferred the group. You are now a normal member of the group."), 'success');
                         $.modal.close();
                     },
@@ -345,7 +345,7 @@ define([
                     url: Common.getUrl({
                         'name': 'group_member',
                         'group_id': _this.groupView.group.id,
-                        'email': encodeURIComponent(app.pageOptions.username),
+                        'email': encodeURIComponent(app.pageOptions.username)
                     }),
                     type: 'delete',
                     dataType: 'json',

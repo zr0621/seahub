@@ -118,7 +118,7 @@ html,body {
         <div class="group-path cur-view-path-path">
             <a href="{% url 'group_list' %}" class="normal">{% trans "Groups" %}</a>
             <span class="path-split">/</span>
-            <%- name %>
+            <span class="group-name"><%- name %></span>
         </div>
         <div class="group-toolbar-2">
             <% if (app.pageOptions.enable_wiki) { %>

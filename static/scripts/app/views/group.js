@@ -168,6 +168,12 @@ define([
             this.$emptyTip = this.$('#group-repos .empty-tips');
         },
 
+        // update group name. e.g 'rename'
+        updateName: function(new_name) {
+            this.group.name = new_name;
+            $('.group-name', this.$mainCon).html(Common.HTMLescape(new_name));
+        },
+
         show: function(group_id, options) {
             this.group_id = group_id;
             this.showGroup(options);
