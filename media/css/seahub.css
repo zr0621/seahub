@@ -1817,8 +1817,6 @@ button.sf-dropdown-toggle:focus {
     border-bottom: 1px solid #e8e8e8;
     display:flex;
     flex-shrink:0;
-}
-.main-panel-top {
     height:49px;
 }
 .common-toolbar {
@@ -2046,14 +2044,15 @@ button.sf-dropdown-toggle:focus {
 }
 #account {
     position:relative;
+    margin-left:32px;
 }
 #account .avatar {
     vertical-align:middle;
     border-radius:1000px;
 }
 #my-info {
-    cursor: pointer;
-    color: #d6d6d6;
+    cursor:pointer;
+    color:#d6d6d6;
 }
 .account-popup .avatar {
     float:left;
@@ -2062,13 +2061,13 @@ button.sf-dropdown-toggle:focus {
     margin-left:45px;
 }
 .account-popup {
-    left:0;
+    right:0;
     top:52px;
     font-size:13px;
 }
 .account-popup .outer-caret {
     top:-10px;
-    left:7px;
+    right:16px;
 }
 .account-popup .sf-popover-con {
     padding:0;
