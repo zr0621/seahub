@@ -107,6 +107,10 @@ define([
             },
 
             renderMainCon: function() {
+                if ($('#dir-view').length) {
+                    return;
+                }
+
                 this.$mainCon = $('<div class="main-panel-main main-panel-main-with-side" id="dir-view"></div>').html(this.template());
                 this.$el.append(this.$mainCon);
 
@@ -417,7 +421,6 @@ define([
 
             renderDir: function() {
 
-                // for 'switch view_mode'
                 this.$loadingTip.show();
                 this.$table.hide();
                 this.$tbody.empty();
@@ -506,13 +509,12 @@ define([
                     site_root: app.pageOptions.site_root
                 };
 
-                // when click to switch view_mode
-                if ($('#dir-view-toolbar').length) {
-                    return;
+                if (!$('#dir-view-toolbar').length) {
+                    this.$toolbar = $('<div class="cur-view-toolbar d-flex" id="dir-view-toolbar"></div>').html(this.toolbarTemplate(data));
+                    this.$('.common-toolbar').before(this.$toolbar);
+                } else {
+                    this.$toolbar.html(this.toolbarTemplate(data));
                 }
-
-                this.$toolbar = $('<div class="cur-view-toolbar d-flex" id="dir-view-toolbar"></div>').html(this.toolbarTemplate(data));
-                this.$('.common-toolbar').before(this.$toolbar);
 
                 this.$('.dir-toolbar-2').html(this.toolbar2Template(data));
 

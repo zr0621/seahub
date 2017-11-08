@@ -218,9 +218,13 @@ define([
                 data: {
                     'wiki_enabled': wiki_enabled
                 },
-                success: function() {
+                success: function(data) {
                     _this.hide();
-                    _this.groupView.renderGroupTop();
+                    _this.groupView.group = data;
+                    _this.groupView.renderToolbar2({
+                        'id': data.id,
+                        'wiki_enabled': data.wiki_enabled
+                    });
                 },
                 error: function(xhr) {
                     var error_msg;

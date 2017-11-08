@@ -121,12 +121,13 @@ define([
             this.$tableBody = $('tbody', this.$table);
             this.$loadingTip = this.$('.loading-tip');
             this.$emptyTip = this.$('.empty-tips');
-            return this;
         },
 
         show: function() {
-            this.renderToolbar();
-            this.renderMainCon();
+            if (!$('#my-repos').length) {
+                this.renderToolbar();
+                this.renderMainCon();
+            }
 
             this.showMyRepos();
         },

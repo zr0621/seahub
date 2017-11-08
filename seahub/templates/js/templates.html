@@ -1404,6 +1404,21 @@
     <button class="repo-create btn-white"><span class="icon-plus-square add vam"></span><span class="vam">{% trans "New Library" %}</span></button>
     {% endif %}
 </script>
+<script type="text/template" id="group-path-tmpl">
+    <a href="{% url 'group_list' %}" class="normal">{% trans "Groups" %}</a>
+    <span class="path-split">/</span>
+    <span class="group-name"><%- name %></span>
+</script>
+<script type="text/template" id="group-toolbar2-tmpl">
+    <% if (app.pageOptions.enable_wiki) { %>
+    <% if (wiki_enabled) { %>
+        <a href="{{SITE_ROOT}}group/<%= id %>/wiki/" class="sf2-icon-wiki2 op-icon group-top-op-icon" title="{% trans "Wiki" %}" id="group-wiki-icon"></a>
+    <% } %>
+    <% } %>
+    <a href="#" class="sf2-icon-cog1 op-icon group-top-op-icon" title="{% trans "Settings" %}" id="group-settings-icon" aria-label="{% trans "Settings" %}"></a>
+    <a href="#" class="sf2-icon-user2 op-icon group-top-op-icon" title="{% trans "Members" %}" id="group-members-icon" aria-label="{% trans "Members" %}"></a>
+    <a href="#" class="sf2-icon-msgs2 op-icon group-top-op-icon" title="{% trans "Discussion" %}" id="group-discussions-icon" aria-label="{% trans "Discussion" %}"></a>
+</script>
 
 <script type="text/template" id="group-discussions-tmpl">
     <div class="comments-panel-hd">

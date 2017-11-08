@@ -130,8 +130,8 @@ define([
             if (!this.currentView) {
                 this.currentView = newView;
             } else {
-                this.currentView.hide();
                 if (this.currentView != newView) {
+                    this.currentView.hide();
                     this.currentView = newView;
                 }
             }

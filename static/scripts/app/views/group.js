@@ -18,6 +18,8 @@ define([
 
         template: _.template($('#group-tmpl').html()),
         toolbarTemplate: _.template($('#group-toolbar-tmpl').html()),
+        toolbar2Template: _.template($('#group-toolbar2-tmpl').html()),
+        pathTemplate: _.template($('#group-path-tmpl').html()),
         theadTemplate: _.template($('#shared-repos-hd-tmpl').html()),
         theadMobileTemplate: _.template($('#shared-repos-hd-mobile-tmpl').html()),
 
@@ -62,7 +64,7 @@ define([
         },
 
         reset: function() {
-            this.$('.error').hide();
+            this.$error.hide();
             this.$loadingTip.hide();
             if (this.repos.length) {
                 this.$emptyTip.hide();
@@ -93,9 +95,12 @@ define([
                 dataType: 'json',
                 success: function(data) {
                     _this.group = data;
-                    _this.renderToolbar();
-                    _this.renderMainCon({
-                        'name': data.name,
+                    _this.$toolbar.removeClass('hide');
+                    _this.renderPath({
+                        'name': data.name
+                    });
+                    _this.renderToolbar2({
+                        'id': data.id,
                         'wiki_enabled': data.wiki_enabled
                     });
                     _this.showRepoList();
@@ -112,13 +117,13 @@ define([
                     } else {
                         err_msg = gettext("Please check the network.");
                     }
-                    _this.renderMainCon({
-                        'name': '',
-                        'wiki_enabled': ''
-                    });
-                    _this.$('.cur-view-path').hide();
+                    _this.$toolbar.addClass('hide');
+                    _this.$path.empty();
+                    _this.$toolbar2.empty();
                     _this.$loadingTip.hide();
-                    _this.$('.cur-view-main-con .error').html(err_msg).show();
+                    _this.$table.hide();
+                    _this.$emptyTip.hide();
+                    _this.$error.html(err_msg).show();
                 }
             });
         },
@@ -132,11 +137,10 @@ define([
                 cache: false,
                 reset: true,
                 data: {from: 'web'},
-                success: function (collection, response, opts) {
+                success: function(collection, response, opts) {
                 },
-                error: function (collection, response, opts) {
+                error: function(collection, response, opts) {
                     $loadingTip.hide();
-                    var $error = _this.$('.error');
                     var err_msg;
                     if (response.responseText) {
                         if (response['status'] == 401 || response['status'] == 403) {
@@ -147,25 +151,36 @@ define([
                     } else {
                         err_msg = gettext('Please check the network.');
                     }
-                    $error.html(err_msg).show();
+                    _this.$error.html(err_msg).show();
                 }
             });
         },
 
-        renderToolbar: function(data) {
-            this.$toolbar = $('<div class="cur-view-toolbar" id="group-toolbar"></div>').html(this.toolbarTemplate(data));
+        renderToolbar: function() {
+            this.$toolbar = $('<div class="cur-view-toolbar hide" id="group-toolbar"></div>').html(this.toolbarTemplate());
             this.$('.common-toolbar').before(this.$toolbar);
         },
 
-        renderMainCon: function(data) {
-            this.$mainCon = $('<div class="main-panel-main main-panel-main-with-side" id="group"></div>').html(this.template(data));
+        renderMainCon: function() {
+            this.$mainCon = $('<div class="main-panel-main main-panel-main-with-side" id="group"></div>').html(this.template());
             this.$el.append(this.$mainCon);
 
+            this.$path = $('.group-path', this.$mainCon);
+            this.$toolbar2 = $('.group-toolbar-2', this.$mainCon);
             this.$table = this.$('table');
             this.$tableHead = this.$('thead');
             this.$tableBody = this.$('tbody');
             this.$loadingTip = this.$('#group-repos .loading-tip');
             this.$emptyTip = this.$('#group-repos .empty-tips');
+            this.$error = $('.error', this.$mainCon);
+        },
+
+        renderPath: function(data) {
+            this.$path.html(this.pathTemplate(data));
+        },
+
+        renderToolbar2: function(data) {
+            this.$toolbar2.html(this.toolbar2Template(data));
         },
 
         // update group name. e.g 'rename'
@@ -175,6 +190,10 @@ define([
         },
 
         show: function(group_id, options) {
+            if (!$('#group').length) {
+                this.renderToolbar();
+                this.renderMainCon();
+            }
             this.group_id = group_id;
             this.showGroup(options);
         },

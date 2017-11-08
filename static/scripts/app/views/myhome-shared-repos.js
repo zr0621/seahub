@@ -83,7 +83,7 @@ define([
             });
         },
 
-        render: function() {
+        renderMainCon: function() {
             this.$mainCon = $('<div class="main-panel-main" id="shared-repos"></div>').html(this.template());
             this.$el.append(this.$mainCon);
 
@@ -92,11 +92,12 @@ define([
             this.$tableBody = this.$('tbody');
             this.$loadingTip = this.$('.loading-tip');
             this.$emptyTip = this.$('.empty-tips');
-            return this;
         },
 
         show: function() {
-            this.render();
+            if (!$('#shared-repos').length) {
+                this.renderMainCon();
+            }
 
             this.showSharedRepos();
         },
