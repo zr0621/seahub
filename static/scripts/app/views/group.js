@@ -64,8 +64,6 @@ define([
         },
 
         reset: function() {
-            this.$error.hide();
-            this.$loadingTip.hide();
             if (this.repos.length) {
                 this.$emptyTip.hide();
                 this.renderThead();
@@ -86,6 +84,12 @@ define([
 
         showGroup: function(options) {
             var _this = this;
+
+            this.$table.hide();
+            this.$emptyTip.hide();
+            this.$error.hide();
+            this.$loadingTip.show();
+
             $.ajax({
                 url: Common.getUrl({
                     'name': 'group',
@@ -121,8 +125,6 @@ define([
                     _this.$path.empty();
                     _this.$toolbar2.empty();
                     _this.$loadingTip.hide();
-                    _this.$table.hide();
-                    _this.$emptyTip.hide();
                     _this.$error.html(err_msg).show();
                 }
             });
@@ -130,8 +132,6 @@ define([
 
         showRepoList: function() {
             var _this = this;
-            var $loadingTip = this.$loadingTip;
-            $loadingTip.show();
             this.repos.setGroupID(this.group_id);
             this.repos.fetch({
                 cache: false,
@@ -140,7 +140,6 @@ define([
                 success: function(collection, response, opts) {
                 },
                 error: function(collection, response, opts) {
-                    $loadingTip.hide();
                     var err_msg;
                     if (response.responseText) {
                         if (response['status'] == 401 || response['status'] == 403) {
@@ -152,6 +151,9 @@ define([
                         err_msg = gettext('Please check the network.');
                     }
                     _this.$error.html(err_msg).show();
+                },
+                complete: function() {
+                    _this.$loadingTip.hide();
                 }
             });
         },
@@ -167,10 +169,10 @@ define([
 
             this.$path = $('.group-path', this.$mainCon);
             this.$toolbar2 = $('.group-toolbar-2', this.$mainCon);
-            this.$table = this.$('table');
-            this.$tableHead = this.$('thead');
-            this.$tableBody = this.$('tbody');
-            this.$loadingTip = this.$('#group-repos .loading-tip');
+            this.$table = $('table', this.$mainCon);
+            this.$tableHead = $('thead', this.$table);
+            this.$tableBody = $('tbody', this.$table);
+            this.$loadingTip = $('.loading-tip', this.$mainCon);
             this.$emptyTip = this.$('#group-repos .empty-tips');
             this.$error = $('.error', this.$mainCon);
         },
