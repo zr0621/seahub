@@ -193,6 +193,10 @@
 .sf2-icon-logout:before { content: "\e030"; }
 
 /******* tags **********/
+html, body {
+    height:100%;
+    overflow:hidden;
+}
 body,
 ul,ol,li,dl,dt,dd,
 pre,blockquote,
@@ -1760,6 +1764,7 @@ button.sf-dropdown-toggle:focus {
 
 /********** Container ***********/
 #wrapper {
+    flex-direction: column;
 }
 #header {
     background:#f4f4f7;
@@ -1767,18 +1772,15 @@ button.sf-dropdown-toggle:focus {
     height:53px;
     font-size: 14px;
     border-bottom: 1px solid #e8e8e8;
-    padding-bottom:4px;
-    z-index:1; /* fix for: modal dialog z-index is 1001 */
-}
-#header-inner {
-    margin:0 auto;
+    padding:8px 16px 4px;
+    /*display:flex;*/
+    justify-content:space-between;
+    flex-shrink:0;
 }
 #main {
-    min-height: 400px;
-    _height: 400px;
-}
-#main.top-padding {
-    padding-top:53px;
+    flex:auto;
+    overflow-y:auto;
+    overflow-x:hidden;
 }
 #wide-panel-noframe {
     padding-top:16px;
@@ -2115,39 +2117,8 @@ button.sf-dropdown-toggle:focus {
 }
 
 /* header */
-#notice-con {
-    color:red;
-    padding:3px 5px;
-    background:#ffc;
-    border-radius:1px;
-    box-shadow:0 0 6px gray;
-}
 #logo {
     margin-right:30px;
-}
-
-/* footer */
-#footer {
-    color:#636363;
-    font-size:12px;
-    padding:20px 0 10px;
-    margin:80px auto 25px;
-    border-top:1px solid #DDD;
-}
-#footer .items {
-    width:65%;
-}
-#footer .other-info {
-    width:30%;
-}
-#footer .item {
-    float:left;
-    width:32%;
-    padding:0 3% 0 2%;
-}
-#footer a {
-    color:#888;
-    font-weight:normal;
 }
 
 /*** separate pages ***/
