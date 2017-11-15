@@ -412,6 +412,7 @@ table img { vertical-align:middle; }
 .fright { float:right; }
 .clear { clear:both; }
 .d-flex { display:flex; }
+.fd-col { flex-direction:column; }
 .show { display:block; }
 .inline-block { display: inline-block; }
 .hide { display:none; }
@@ -1764,7 +1765,6 @@ button.sf-dropdown-toggle:focus {
 
 /********** Container ***********/
 #wrapper {
-    flex-direction: column;
 }
 #header {
     background:#f4f4f7;

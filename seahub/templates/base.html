@@ -21,7 +21,7 @@
 </head>
 
 <body>
-    <div id="wrapper" class="{{ LANGUAGE_CODE }} d-flex h100">
+    <div id="wrapper" class="{{ LANGUAGE_CODE }} d-flex fd-col h100">
         {% block info_bar_message %}
         {% if request.user.is_authenticated and request.cur_note %}
         <div id="info-bar">
@@ -96,7 +96,7 @@
             {% endblock %}
         </div>
 
-        <div id="main" class="">
+        <div id="main" class="container-fluid w100">{# since #wrapper is `d-flex`, 'w100' is necessary here. #}
             {% block main_content %}
             <div class="row">
                 <div id="main-panel" class="w100 ovhd">
