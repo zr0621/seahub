@@ -43,7 +43,7 @@
 
             {% block header_right %}
             {% if request.user.is_authenticated %}
-            <div>
+            <div class="d-flex">
                 {% if has_file_search %}
                     {% include 'snippets/search_form.html' %}
                 {% endif %}
