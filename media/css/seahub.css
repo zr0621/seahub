@@ -413,6 +413,8 @@ table img { vertical-align:middle; }
 .clear { clear:both; }
 .d-flex { display:flex; }
 .fd-col { flex-direction:column; }
+.flex-auto { flex:auto; }
+.flex-1 { flex:1; }
 .show { display:block; }
 .inline-block { display: inline-block; }
 .hide { display:none; }
@@ -420,6 +422,8 @@ table img { vertical-align:middle; }
 .errorlist { color:red; }
 .error-tip { text-align:center; margin-top:5em; }
 .ovhd { overflow:hidden; }
+.ov-auto { overflow:auto; }
+.ov-vb { overflow:visible; }
 .bold { font-weight:bold; }
 .no-bold { font-weight:normal; }
 .w100 { width: 100%; }
@@ -435,12 +439,6 @@ table img { vertical-align:middle; }
     background:#fddaa4;
     color:#1f0600;
     text-align:center;
-}
-.fixed-top-bar {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
 }
 .top-bar {
     padding:7px 4px;
@@ -870,17 +868,10 @@ textarea:-moz-placeholder {/* for FF */
     border-bottom:1px solid #ddd;
     margin-bottom:1em;
 }
-/* Hide for mobile, show later */
-@media (min-width: 768px) {
-    .side-nav {
-        position:fixed;
-        top:52px;
-        bottom:0;
-        z-index:1;
-        padding:20px;
-        overflow:hidden;
-        border-right:1px solid #eee;
-    }
+.side-nav {
+    padding:20px;
+    overflow:hidden;
+    border-right:1px solid #eee;
 }
 @media (max-width: 767px) {
     .side-nav {
@@ -891,19 +882,14 @@ textarea:-moz-placeholder {/* for FF */
         top:0;
         bottom:0;
         z-index:1;
-        padding:20px;
-        overflow:hidden;
-        border-right:1px solid #eee;
         box-shadow:0 0 4px #ccc;
+        -webkit-transition: all 0.3s ease;
+        -moz-transition: all 0.3s ease;
+        transition: all 0.3s ease;
     }
 }
 .side-nav:hover {
     overflow-y:auto;
-}
-.side-nav {
-    -webkit-transition: all 0.3s ease;
-    -moz-transition: all 0.3s ease;
-    transition: all 0.3s ease;
 }
 .home-side-nav {
     flex:auto;
@@ -1777,11 +1763,6 @@ button.sf-dropdown-toggle:focus {
     justify-content:space-between;
     flex-shrink:0;
 }
-#main {
-    flex:auto;
-    overflow-y:auto;
-    overflow-x:hidden;
-}
 #wide-panel-noframe {
     padding-top:16px;
 }
@@ -1827,7 +1808,7 @@ button.sf-dropdown-toggle:focus {
 }
 #right-panel {
     padding-top:16px;
-    margin-bottom:20px;
+    padding-bottom:20px;
 }
 .main-panel-main {
     flex:auto;

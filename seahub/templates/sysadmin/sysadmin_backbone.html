@@ -49,11 +49,11 @@
                 </div>
         </div>
 
-        <div id="main" class="container-fluid w100">
+        <div id="main" class="container-fluid w100 flex-auto d-flex">
             <span class="loading-icon loading-tip" id="initial-loading"></span>
-            <div class="row hide">
+            <div class="row flex-1 d-flex hide">
                 <div class="side-nav side-tabnav col-md-3" id="side-nav" role="navigation"></div>
-                <div id="right-panel" class="col-md-9 col-md-offset-3">
+                <div id="right-panel" class="col-md-9 ov-auto flex-1">
                     {% block right_panel %}{% endblock %}
                 </div>
             </div>

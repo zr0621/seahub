@@ -32,14 +32,14 @@
         {% endblock info_bar_message %}
 
         <div id="header" class="{% block header_css_class %}d-flex{% endblock %}">
-            <a href="{{ SITE_ROOT }}" id="logo">
+            <a href="{{ SITE_ROOT }}" id="logo" class="hidden-sm-down">
                 {% if seacloud_mode %}
                 <img src="{{ MEDIA_URL }}img/seacloud_logo.png?t=1398068110" title="Seacloud" alt="logo" width="186" height="31" />
                 {% else %}
                 <img src="{{ MEDIA_URL }}{{ logo_path }}" title="{{ site_title }}" alt="logo" width="{{logo_width}}" height="{{logo_height}}" />
                 {% endif %}
             </a>
-            <button class="sf2-icon-list-view side-nav-toggle hidden-md-up hide" title="{% trans "Side Nav Menu" %}" id="js-toggle-side-nav" aria-label="{% trans "Side Nav Menu" %}"></button>
+            <button class="sf2-icon-list-view side-nav-toggle hidden-md-up" title="{% trans "Side Nav Menu" %}" id="js-toggle-side-nav" aria-label="{% trans "Side Nav Menu" %}"></button>
 
             {% block header_right %}
             {% if request.user.is_authenticated %}
@@ -96,7 +96,7 @@
             {% endblock %}
         </div>
 
-        <div id="main" class="container-fluid w100">{# since #wrapper is `d-flex`, 'w100' is necessary here. #}
+        <div id="main" class="container-fluid w100 flex-auto {% block main_class %}ov-auto{% endblock %}">{# since #wrapper is `d-flex`, 'w100' is necessary here. #}
             {% block main_content %}
             <div class="row">
                 <div id="main-panel" class="w100 ovhd">
@@ -214,10 +214,6 @@ $('#info-bar .close').click(function() {
 })();
 {% endif %}
 
-if ($('.side-nav').length) {
-    $('#logo').addClass('hidden-sm-down');
-    $('#js-toggle-side-nav').removeClass('hide');
-}
 $('#js-toggle-side-nav').click(function() {
     $('.side-nav').css({'left': 0});
     return false;
@@ -225,11 +221,6 @@ $('#js-toggle-side-nav').click(function() {
 $('.js-close-side-nav').click(function() {
     $('.side-nav').css({'left': '-300px'});
     return false;
-});
-$(window).resize(function() {
-    if ($(window).width() >= 768) {
-        $('.side-nav').css({'left': 0});
-    }
 });
 </script>
 {% block extra_script %}{% endblock %}
